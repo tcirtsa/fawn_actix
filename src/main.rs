@@ -3,6 +3,7 @@ mod handler;
 mod mapper;
 mod model;
 mod redis_fn;
+mod token;
 
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer};
@@ -32,6 +33,8 @@ async fn main() -> std::io::Result<()> {
     //redis
     let client =
         redis::Client::open(env::var("REDIS_URL").expect("REDIS_URL must be set")).unwrap();
+    //jwt
+    let jwt_secret = env::var("JWT_SECRET").unwrap_or_else(|_| "default_secret".to_string());
 
     //开启服务器
     HttpServer::new(move || {
@@ -44,6 +47,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .app_data(web::Data::new(pool.clone()))
             .app_data(web::Data::new(client.clone()))
+            .app_data(web::Data::new(jwt_secret.clone()))
             .service(handler::data::upload_voice)
     })
     .bind("127.0.0.1:8080")?
