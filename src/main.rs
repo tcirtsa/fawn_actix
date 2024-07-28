@@ -2,7 +2,7 @@ mod db;
 mod handler;
 mod mapper;
 mod model;
-mod redis;
+mod redis_fn;
 
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer};
@@ -29,6 +29,10 @@ async fn main() -> std::io::Result<()> {
         .build(manager)
         .expect("Failed to create pool.");
 
+    //redis
+    let client =
+        redis::Client::open(env::var("REDIS_URL").expect("REDIS_URL must be set")).unwrap();
+
     //开启服务器
     HttpServer::new(move || {
         let cors = Cors::default()
@@ -36,7 +40,11 @@ async fn main() -> std::io::Result<()> {
             .allow_any_method()
             .allow_any_header()
             .max_age(3600);
-        App::new().wrap(cors).app_data(web::Data::new(pool.clone()))
+        App::new()
+            .wrap(cors)
+            .app_data(web::Data::new(pool.clone()))
+            .app_data(web::Data::new(client.clone()))
+            .service(handler::data::upload_voice)
     })
     .bind("127.0.0.1:8080")?
     .run()

@@ -1,14 +1,11 @@
 use crate::db::upload::upload::dsl::*;
 use crate::model::upload_model::Upload;
+use crate::DbPool;
 use actix_multipart::Multipart;
 use actix_web::{post, web, Error, HttpResponse};
 use chrono;
-use futures::TryStreamExt;
-use diesel::pg::PgConnection;
-use diesel::r2d2::{ConnectionManager, Pool};
 use diesel::RunQueryDsl;
-
-pub type DbPool = Pool<ConnectionManager<PgConnection>>;
+use futures::TryStreamExt;
 
 #[post("/upload_voice")]
 pub async fn upload_voice(
