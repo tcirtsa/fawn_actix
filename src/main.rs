@@ -2,8 +2,9 @@ mod db;
 mod handler;
 mod mapper;
 mod model;
-mod redis_fn;
-mod token;
+mod optimize;
+
+use crate::optimize::*;
 
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer};
