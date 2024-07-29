@@ -1,4 +1,3 @@
-// src/main.rs
 use actix::prelude::*;
 use actix_web::{get, web, HttpRequest, Responder};
 use actix_web_actors::ws;
