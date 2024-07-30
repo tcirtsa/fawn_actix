@@ -7,4 +7,5 @@ use serde::{Deserialize, Serialize};
 pub struct A {
     pub account: String,
     pub psd: String,
+    pub file: Vec<u8>,
 }

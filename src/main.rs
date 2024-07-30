@@ -5,6 +5,7 @@ mod model;
 mod optimize;
 
 use crate::optimize::*;
+use handler::ws::SESSIONS;
 
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer};
@@ -50,6 +51,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(client.clone()))
             .app_data(web::Data::new(jwt_secret.clone()))
             .service(handler::data::upload_voice)
+            .service(handler::ws::websocket_handler)
     })
     .bind("127.0.0.1:8080")?
     .run()

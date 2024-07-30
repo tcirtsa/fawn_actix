@@ -42,3 +42,33 @@ pub async fn test2(pool: web::Data<DbPool>) -> impl Responder {
         HttpResponse::Ok().body("error")
     }
 }
+
+#[get("/test3")]
+async fn save_file(pool: web::Data<DbPool>, mut payload: Multipart) -> impl Responder {
+    while let Ok(Some(mut field)) = payload.try_next().await {
+        let content_disposition = field.content_disposition();
+        let filename = content_disposition.get_filename().unwrap();
+
+        let mut bytes = Vec::new();
+        while let Some(chunk) = field.next().await {
+            let data = chunk.unwrap();
+            bytes.extend_from_slice(&data);
+        }
+
+        // 将文件数据插入数据库
+        let new_file = A {
+            account: filename.to_string(),
+            psd: hash_password("123"),
+            file: bytes,
+        };
+
+        let conn = pool.get().expect("couldn't get db connection from pool");
+
+        diesel::insert_into(a)
+            .values(&new_file)
+            .execute(&mut conn)
+            .expect("Error saving new file");
+    }
+
+    HttpResponse::Ok().body("File uploaded successfully")
+}
