@@ -14,7 +14,6 @@ diesel = { version = "2.2.2", features = [
     "r2d2",
     "chrono",
     "serde_json",
-    "mysql"
 ] }
 dotenv = "0.15.0"
 actix-cors = "0.7.0"
